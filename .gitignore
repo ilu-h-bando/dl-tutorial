@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# 環境
+.venv/
+venv/
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 元の作業用ノートブック（教材フル版に置き換え済みのため push しない）
+DL0001(xor non np).ipynb
+DL30(optdigits visual).ipynb
+
+# 注意: optdigits/ のデータは配布するのでコミットする（無視しない）
