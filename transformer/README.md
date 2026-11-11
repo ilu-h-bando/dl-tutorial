@@ -8,7 +8,7 @@ PyTorchやTensorFlow、学習済みモデルは使いません。Google Colabの
 
 | ノートブック | 内容 | データ | Colab |
 |---|---|---|---|
-| **TF01_tiny_gpt_waka.ipynb** | NumPy で 1 段の GPT（約 7 万パラメータ）を実装。八代集の和歌を学習し、最初の 5 音（または 5＋7 音）から「五・七・五・七・七」の歌を生成する | 実行時に Wikisource から自動取得 | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ilu-h-bando/dl-tutorial/blob/main/transformer/TF01_tiny_gpt_waka.ipynb) |
+| **[TF01_tiny_gpt_waka.ipynb](TF01_tiny_gpt_waka.ipynb)** | NumPy で 1 段の GPT（約 7 万パラメータ）を実装。八代集の和歌を学習し、最初の 5 音（または 5＋7 音）から「五・七・五・七・七」の歌を生成する | 実行時に Wikisource から自動取得 | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ilu-h-bando/dl-tutorial/blob/main/transformer/TF01_tiny_gpt_waka.ipynb) |
 | **[TF02_vision_transformer_fashion.ipynb](TF02_vision_transformer_fashion.ipynb)** | NumPyで1ブロックのViTを実装。パッチ化・CLS・位置情報・Attentionを観察し、Fashion-MNISTを10分類する | 実行時にFashion-MNIST公式GitHubから自動取得 | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ilu-h-bando/dl-tutorial/blob/main/transformer/TF02_vision_transformer_fashion.ipynb) |
 
 ## TF01 和歌GPTで体験すること
