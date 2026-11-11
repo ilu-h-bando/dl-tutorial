@@ -11,7 +11,7 @@ PyTorchやTensorFlow、学習済みモデルは使いません。Google Colabの
 |---|---|---|---|
 | **[TF01_tiny_gpt_waka.ipynb](TF01_tiny_gpt_waka.ipynb)** | NumPy で 1 段の GPT（約 7 万パラメータ）を実装。八代集の和歌を学習し、最初の 5 音（または 5＋7 音）から「五・七・五・七・七」の歌を生成する | 実行時に Wikisource から自動取得 | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ilu-h-bando/dl-tutorial/blob/main/transformer/TF01_tiny_gpt_waka.ipynb) |
 | **[TF02_vision_transformer_fashion.ipynb](TF02_vision_transformer_fashion.ipynb)** | NumPyで1ブロックのViTを実装。パッチ化・CLS・位置情報・Attentionを観察し、Fashion-MNISTを10分類する | 実行時にFashion-MNIST公式GitHubから自動取得 | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ilu-h-bando/dl-tutorial/blob/main/transformer/TF02_vision_transformer_fashion.ipynb) |
-| **[TF03_vision_language_model_fasion.ipynb](TF03_vision_language_model_fasion.ipynb)** | NumPyで1ブロックのVLMを実装。画像パッチと文字を1本の列に並べ、Fashion-MNISTの種類を「スニーカー」などのカタカナで1文字ずつ生成して答える | 実行時にFashion-MNIST公式GitHubから自動取得 | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ilu-h-bando/dl-tutorial/blob/main/transformer/TF03_vision_language_model_fasion.ipynb) |
+| **[TF03_vision_language_model_fashion.ipynb](TF03_vision_language_model_fashion.ipynb)** | NumPyで1ブロックのVLMを実装。画像パッチと文字を1本の列に並べ、Fashion-MNISTの種類を「スニーカー」などのカタカナで1文字ずつ生成して答える | 実行時にFashion-MNIST公式GitHubから自動取得 | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ilu-h-bando/dl-tutorial/blob/main/transformer/TF03_vision_language_model_fashion.ipynb) |
 
 ## TF01 和歌GPTで体験すること
 
@@ -225,7 +225,7 @@ TF02のViTに、TF01の「1文字ずつ生成する」仕組みを足します�
 transformer/
 ├─ TF01_tiny_gpt_waka.ipynb              # 1段GPTで和歌を詠む
 ├─ TF02_vision_transformer_fashion.ipynb # 1ブロックViTで画像を分類
-├─ TF03_vision_language_model_fasion.ipynb # 1ブロックVLMでカタカナで答える
+├─ TF03_vision_language_model_fashion.ipynb # 1ブロックVLMでカタカナで答える
 └─ README.md
 ```
 
