@@ -2,6 +2,7 @@
 
 Deep Learning 講義の **「Transformer」パート（P21〜39）** の部品を、**NumPyで1つずつ組み立てて動かす**チュートリアルです。
 TF01は1ブロックのGPTで和歌の続きを生成し、TF02はその部品を使った小さなVision Transformerで服・靴・バッグなどを分類します。
+TF03はTF02に文字の生成を足した小さなVision-Language Model（VLM）で、画像を見て種類をカタカナで答えます。
 PyTorchやTensorFlow、学習済みモデルは使いません。Google Colabのボタンからブラウザで実行できます。
 
 ## ノートブック
@@ -10,6 +11,7 @@ PyTorchやTensorFlow、学習済みモデルは使いません。Google Colabの
 |---|---|---|---|
 | **[TF01_tiny_gpt_waka.ipynb](TF01_tiny_gpt_waka.ipynb)** | NumPy で 1 段の GPT（約 7 万パラメータ）を実装。八代集の和歌を学習し、最初の 5 音（または 5＋7 音）から「五・七・五・七・七」の歌を生成する | 実行時に Wikisource から自動取得 | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ilu-h-bando/dl-tutorial/blob/main/transformer/TF01_tiny_gpt_waka.ipynb) |
 | **[TF02_vision_transformer_fashion.ipynb](TF02_vision_transformer_fashion.ipynb)** | NumPyで1ブロックのViTを実装。パッチ化・CLS・位置情報・Attentionを観察し、Fashion-MNISTを10分類する | 実行時にFashion-MNIST公式GitHubから自動取得 | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ilu-h-bando/dl-tutorial/blob/main/transformer/TF02_vision_transformer_fashion.ipynb) |
+| **[TF03_vision_language_model_fasion.ipynb](TF03_vision_language_model_fasion.ipynb)** | NumPyで1ブロックのVLMを実装。画像パッチと文字を1本の列に並べ、Fashion-MNISTの種類を「スニーカー」などのカタカナで1文字ずつ生成して答える | 実行時にFashion-MNIST公式GitHubから自動取得 | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ilu-h-bando/dl-tutorial/blob/main/transformer/TF03_vision_language_model_fasion.ipynb) |
 
 ## TF01 和歌GPTで体験すること
 
@@ -155,14 +157,67 @@ print(f'Last update test accuracy: {last_accuracy:.2%}')
 時間制限で途中終了した場合、lastは8エポック目とは限りません。保存設定の `completed_epochs` を確認してください。
 学習済みモデル・ダウンロードデータ・過去の比較用JSONは、このリポジトリには含めていません。
 
+## TF03 Fashion-MNISTをカタカナで答えるVision-Language Model
+
+TF02のViTに、TF01の「1文字ずつ生成する」仕組みを足します。画像パッチの後ろに質問文「これは？」を置き、
+続きの文字を生成して「スニーカー」「アンクルブーツ」のように答えます。
+
+```text
+画像パッチ → Linearで64次元へ ─┐
+                                ├→ 1本の列 → 位置Embedding
+質問と答えの文字 → Embedding表 ─┘
+  → マスク付きSelf-Attention → SwiGLU MLP → 文字の位置から次の文字を予測
+```
+
+| TF02の小さなViT | TF03の小さなVLM |
+|---|---|
+| 入力は画像パッチ＋CLS | 入力は画像パッチ＋質問文＋答えの文字（CLSなし） |
+| マスクなし | 画像は画像だけ、文字は画像全体と前の文字を参照 |
+| CLSの出力から10クラスを選ぶ | 文字を1つずつ生成し、`<eos>` で止まる |
+| 正解率＝クラスの一致 | 正解率＝生成した文字列の完全一致 |
+
+初期設定は **PATCH=7、画像16トークン＋文字12位置の28トークン、語彙33、75,169パラメータ**です。
+損失は答えの文字と `<eos>` だけで計算します。
+
+### 実行する
+
+1. 上表のTF03のColabボタンで開き、「ランタイム > すべてのセルを実行」を選びます。
+2. データと分割はTF02と同じです（学習54,000枚・検証6,000枚・公式テスト10,000枚）。
+3. 学習前後の生成結果、公式テストでの完全一致の正解率、混同行列（10語以外の出力を数える「その他」列つき）を確認します。
+4. 1文字ずつの生成の確率と、答えの1文字目を出す位置から画像パッチへのAttentionを見ます。
+
+図にカタカナを表示するため、日本語フォントがない環境（Colabなど）ではIPAexゴシックを実行時に取得します。
+取得できない場合は、図のラベルだけ英語にして続行します。
+
+### 実行結果の目安
+
+手元のCPUで1回実行した結果です（SEED=0、8エポック、学習ループ約170秒）。環境と乱数で変わります。
+
+| 項目 | 結果 |
+|---|---:|
+| 検証6,000枚の完全一致 | 86.33% |
+| 公式テスト10,000枚の完全一致 | 86.38% |
+| 10語以外の文字列を出力した数 | 0 / 10,000 |
+
+間違いの中心はTF02と同じ、Tシャツ・シャツ・プルオーバー・コートの取り違えです。
+画像の見分けという仕事は分類と同じなので、VLMにしても正解率は上がりません。
+
+### 学習件数を変える
+
+設定セルの `TRAIN_PER_CLASS`（1クラスあたりの学習枚数、最大5400）を変えると、学習データの件数と正解率の関係を調べられます。
+検証画像は件数を変えても同じです。ノート末尾の任意セル（`RUN_SWEEP = True`）で、複数の件数をまとめて比較できます。
+
+`tf03_results/patch_<PATCH>/` に、モデル（`tf03_vlm_model.npz`、`tf03_vlm_model_last.npz`）と `tf03_metrics.json` を保存します。
+
 ## 学習データの出典・ライセンス
 
 - [Wikisource](https://ja.wikisource.org/) の『古今和歌集』『後撰和歌集』『拾遺和歌集』『千載和歌集』『新古今和歌集』（各歌に付いている、五・七・五・七・七で区切ったひらがなの読みを使用）
 - 作品は著作権が切れています。ページの文章のライセンスは [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.ja)（Wikisource の寄稿者による）です
 - TF01は**実行時に Wikisource の API から取得するだけ**で、データをこのリポジトリには含めていません
 
-- TF02は[Zalando Research / Fashion-MNIST](https://github.com/zalandoresearch/fashion-mnist)を使用します。MIT License。
+- TF02・TF03は[Zalando Research / Fashion-MNIST](https://github.com/zalandoresearch/fashion-mnist)を使用します。MIT License。
   実行時に公式データを取得し、公式READMEのMD5とIDX形式・件数を確認します。
+- TF03は、日本語フォントがない環境でのみ [IPAexゴシック](https://moji.or.jp/ipafont/)（IPAフォントライセンス v1.0）を実行時に取得します。フォントはこのリポジトリには含めていません。
 
 ## ディレクトリ構成
 
@@ -170,6 +225,7 @@ print(f'Last update test accuracy: {last_accuracy:.2%}')
 transformer/
 ├─ TF01_tiny_gpt_waka.ipynb              # 1段GPTで和歌を詠む
 ├─ TF02_vision_transformer_fashion.ipynb # 1ブロックViTで画像を分類
+├─ TF03_vision_language_model_fasion.ipynb # 1ブロックVLMでカタカナで答える
 └─ README.md
 ```
 
